@@ -1,13 +1,23 @@
-const express = require('express');
-require('dotenv').config();
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import { App } from './src/app.js';
+dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 3000;
+const options = { useNewUrlParser: true }
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+try {
+  mongoose.connect(process.env.MONGODB_URI, options);
+  let db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'connection error:'));
+  db.on('open', () => {
+    console.log(`Connected to MongoDB Cluster`);
+  });
+} catch (e) {
+  console.error(e);
+}
 
-app.listen(port, () => {
-  console.log(`listening on ${port}...`);
-});
+try {
+  App.start(process.env.PORT);
+} catch (e) {
+  console.error(e);
+}
