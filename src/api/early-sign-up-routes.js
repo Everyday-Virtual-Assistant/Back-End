@@ -1,6 +1,5 @@
 import express from 'express';
 import waitingListUser from '../models/newWaitingListUser.js';
-import sendJSON from '../middleware/sendJSON.js';
 const earlySignUpRouter = express.Router();
 
 // list of all early users
@@ -22,7 +21,6 @@ earlySignUpRouter.get('/single-early-user', async (req, res) => {
   } catch (err) {
     console.error(`An error occured while trying to retrieve the User: ${err}`);
     res.status(500).json(err);
-    sendJSON(res, err);
   }
 });
 
