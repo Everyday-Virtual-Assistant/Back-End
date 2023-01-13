@@ -9,7 +9,8 @@ earlySignUpRouter.get('/all-early-users', async (req, res) => {
     let allUsers = await waitingListUser.find({});
     res.send(allUsers);
   } catch (err) {
-    console.error(err);
+    console.error(`An error occured while trying to retrieve all Users: ${err}`);
+    res.status(500).json(err);
   }
 });
 
@@ -17,9 +18,10 @@ earlySignUpRouter.get('/all-early-users', async (req, res) => {
 earlySignUpRouter.get('/single-early-user', async (req, res) => {
   try {
     const user = await waitingListUser.find({ _id: req.body.userId });
-    sendJSON(res, user);
+    res.send(user);
   } catch (err) {
-    console.log(err);
+    console.error(`An error occured while trying to retrieve the User: ${err}`);
+    res.status(500).json(err);
     sendJSON(res, err);
   }
 });
@@ -28,9 +30,10 @@ earlySignUpRouter.post('/add-new-early-user', async (req, res) => {
   try {
     const { name, email } = req.body;
     let newWaitingListUser = await waitingListUser.create({ name, email });
-    sendJSON(res, newWaitingListUser);
+    res.send(newWaitingListUser);
   } catch (err) {
-    console.log(err);
+    console.error(`An error occured while trying to create the new User: ${err}`);
+    res.status(500).json(err);
   }
 })
 

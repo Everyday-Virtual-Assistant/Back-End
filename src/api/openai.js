@@ -17,7 +17,7 @@ const openai = new OpenAIApi(config);
 // Capable of very simple tasks,
 // usually the fastest model in the GPT-3 series, and lowest cost.
 // Max tokens of 2048
-const AiPrompt = async (userId, model, prompt) => {
+const AiPrompt = async (model, prompt) => {
   try {
     const completion = await openai.createCompletion({
       model: `text-${model}`,
@@ -27,10 +27,9 @@ const AiPrompt = async (userId, model, prompt) => {
     return completion;
   } catch (err) {
     console.error(err);
-    res.sendJSON({
-      status: 500,
-      message: "An errror occurred while trying to process your request."
-    });;
+    res.status(500).json({
+      message: "An error occurred while trying to process your request. Please try again."
+    });
   }
 }
 
@@ -43,14 +42,15 @@ const AiRouter = express.Router();
 AiRouter.get('/:userId/history', async (req, res) => {
   try {
     let userHistory = await history.find({ userId: req.params.userId })
-    res.sendJSON({
-      status: 200,
+    res.status(200).json({
       history: [ userHistory ]
     });
   } catch (err) {
     console.error(err);
-    res.sendJSON(res, {
-      error: err.message
+    res.status(500).json({
+      error: {
+        message: err.message
+      }
     });
   }
 });
@@ -60,57 +60,48 @@ AiRouter.post('/:userId/:model/prompt', async (req, res) => {
   const { userId, model } = req.params;
   const prompt = req.body.prompt || '';
   if (prompt.trim().length === 0) {
-    res.sendJSON(res, {
-      status: 400,
+    res.status(400).json({
       error: {
-        message: 'Please enter a valid prompt.'
+        message: "Please enter a valid prompt."
       }
     });
     return;
   }
   if (!config.apiKey) {
-    res.sendJSON(res, {
-      status: 401,
+    res.status(401).json({
       error: {
-        message: 'Invalid or missing API Key for OpenAI.'
+        message: "Invalid or missing API Key for OpenAI."
       }
     });
     return;
   }
   if (!userId || userId === '') {
-    res.sendJSON(res, {
-      status: 401,
+    res.status(401).json({
       error: {
-        message: 'Invalid or missing User ID.'
+        message: "Invalid of missing User ID."
       }
     });
     return;
   }
   if (!prompt || prompt === '') {
-    res.sendJSON(res, {
-      status: 400,
+    res.status(400).json({
       error: {
-        message: 'Please enter a valid prompt.'
+        message: "Please enter a valid prompt and try again."
       }
     });
     return;
   }
   try {
-    const promptResponse = await AiPrompt(userId, model, prompt);
-    const userHistory = await history.create({ userId, prompt: promptResponse.data.choices[0].text });
-    res.sendJSON(res, {
-      status: 200,
-      response: promptResponse.data.choices[0].text,
-      fullResponse: promptResponse
-    });
+    const promptResponse = await AiPrompt(model, prompt);
+    // const userHistory = await history.create({ userId, prompt: promptResponse.data.choices[0].text });
+    res.sendJSON(res, promptResponse);
   } catch (err) {
-    console.error(err);
-    res.sendJSON(res, {
-      status: 404,
+    console.error(`Error with OpenAI API request: ${err.message}`);
+    res.status(500).json({
       error: {
         message: err.message
       }
-    })
+    });
   }
 });
 
