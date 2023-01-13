@@ -8,6 +8,7 @@ app.use(express.json());
 
 app.use(welcomeRouter);
 app.use(earlySignUpRouter);
+app.use(AiRouter);
 
 let server;
 

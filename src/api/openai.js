@@ -1,6 +1,8 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import history from '../models/history.js';
 import { Configuration, OpenAIApi } from "openai";
+dotenv.config();
 
 
 // ----------------------------------------------------------------
@@ -22,14 +24,12 @@ const AiPrompt = async (model, prompt) => {
     const completion = await openai.createCompletion({
       model: `text-${model}`,
       prompt: prompt,
-      temperature: 0
+      temperature: 0,
+      max_tokens: 2000,
     });
-    return completion;
+    return completion.data.choices[0].text;
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      message: "An error occurred while trying to process your request. Please try again."
-    });
   }
 }
 
@@ -59,6 +59,7 @@ AiRouter.post('/:userId/:model/prompt', async (req, res) => {
   // create a middleware function handle the conditional cases
   const { userId, model } = req.params;
   const prompt = req.body.prompt || '';
+  console.log({ userId, model, prompt });
   if (prompt.trim().length === 0) {
     res.status(400).json({
       error: {
@@ -94,7 +95,7 @@ AiRouter.post('/:userId/:model/prompt', async (req, res) => {
   try {
     const promptResponse = await AiPrompt(model, prompt);
     // const userHistory = await history.create({ userId, prompt: promptResponse.data.choices[0].text });
-    res.sendJSON(res, promptResponse);
+    res.send(promptResponse);
   } catch (err) {
     console.error(`Error with OpenAI API request: ${err.message}`);
     res.status(500).json({
