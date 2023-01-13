@@ -59,7 +59,6 @@ AiRouter.post('/:userId/:model/prompt', async (req, res) => {
   // create a middleware function handle the conditional cases
   const { userId, model } = req.params;
   const prompt = req.body.prompt || '';
-  console.log({ userId, model, prompt });
   if (prompt.trim().length === 0) {
     res.status(400).json({
       error: {
