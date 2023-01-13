@@ -7,13 +7,24 @@ const earlySignUpRouter = express.Router();
 earlySignUpRouter.get('/all-early-users', async (req, res) => {
   try {
     let allUsers = await waitingListUser.find({});
-    res.send({ allUsers });
+    res.send(allUsers);
   } catch (err) {
     console.error(err);
   }
 });
 
-earlySignUpRouter.post('/add-new-user', async (req, res) => {
+// get a single early user
+earlySignUpRouter.get('/single-early-user', async (req, res) => {
+  try {
+    const user = await waitingListUser.find({ _id: req.body.userId });
+    sendJSON(res, user);
+  } catch (err) {
+    console.log(err);
+    sendJSON(res, err);
+  }
+});
+
+earlySignUpRouter.post('/add-new-early-user', async (req, res) => {
   try {
     const { name, email } = req.body;
     let newWaitingListUser = await waitingListUser.create({ name, email });
