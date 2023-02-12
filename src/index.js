@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { App } from './src/app.js';
+import { App } from './app.js';
 dotenv.config();
 
 const options = { useNewUrlParser: true }
@@ -17,7 +17,7 @@ try {
 }
 
 try {
-  App.start(process.env.PORT);
+  App.start(process.env.PORT || 3000);
 } catch (e) {
   console.error(e);
 }
