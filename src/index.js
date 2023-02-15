@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import cors from 'cors';
 dotenv.config();
 
 import welcomeRouter from './api/welcome.js';
@@ -25,6 +26,9 @@ try {
 
 // Start the server
 const app  = express();
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://www.evaofficial.com']
+}));
 app.use(welcomeRouter);
 app.use(earlySignUpRouter);
 app.use(AiRouter);
