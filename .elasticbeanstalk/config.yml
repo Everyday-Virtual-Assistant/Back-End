@@ -2,6 +2,8 @@ branch-defaults:
   default:
     environment: server
     group_suffix: null
+  main:
+    environment: server
 global:
   application_name: Server
   branch: null
