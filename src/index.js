@@ -7,7 +7,6 @@ dotenv.config();
 import welcomeRouter from './api/welcome.js';
 import earlySignUpRouter from './api/early-sign-up.js';
 import AiRouter from './api/openai.js';
-import imageRouter from './api/image-routes.js';
 
 const PORT = process.env.PORT || 8080;
 
