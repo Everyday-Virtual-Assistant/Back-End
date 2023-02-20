@@ -7,6 +7,7 @@ dotenv.config();
 import welcomeRouter from './api/welcome.js';
 import earlySignUpRouter from './api/early-sign-up.js';
 import AiRouter from './api/openai.js';
+import imageRouter from './api/image-routes.js';
 
 const PORT = process.env.PORT || 8080;
 
@@ -33,5 +34,6 @@ app.use(cors({
 app.use(welcomeRouter);
 app.use(earlySignUpRouter);
 app.use(AiRouter);
+app.use('/images', express.static('images'));
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}...`));
